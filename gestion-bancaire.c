@@ -16,7 +16,7 @@ int main(){
 	PERS monRep[5];
 	int choix;
 	char nom[20], *pnum;
-	saisir_repertoire(monRep, 5);
+	//saisir_repertoire(monRep, 5);
 	do
 	{
 		do

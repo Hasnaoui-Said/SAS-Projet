@@ -1,36 +1,23 @@
 #include<stdio.h>
+#include<string.h>
 
 typedef struct compte_bancaire{
 	char prenom[50],nom[50],CIN[20];
-	int solde;
+	float solde;
 }Client;
-void traiter_choix(int c);
-void startApplication();
-int Menu_Principale();
-void print_infos();
-void Operation();
-void add_clients(Client *client,int *n);
-void add_client(Client *client);
-void affiche_data(Client clients[],int n);
-void affiche_client(Client client);
-
-int main(){
-	startApplication();
-	return 0;
-}
 
 void startApplication(){
 	int choix, a = -1,N = 4;
+			printf("%d",N);
 	Client clients[2000] ;
 	client_data(&clients);
-	affiche_data(clients,N);
+	print_clients(clients,N);
 	do{
 		choix = Menu_Principale();
-		traiter_choix(choix);
-	}while (choix != 0);
-	
+		traiter_choix(choix, clients, &N);
+	}while (choix != 0);	
 }
-void traiter_choix(int c){
+void traiter_choix(int c, Client *clients, int *N){
 	switch(c){
 		case 1 :
 		{
@@ -43,18 +30,18 @@ void traiter_choix(int c){
 			break;
 		}
 		case 3 :
-		{
-			printf("\t3-Introduire un compte bancaire.\n");
+		{	
+			add_client(&clients, N);
 			break;
 		}
 		case 4 :
 		{
-			printf("\t4-Introduire plusieurs comptes bancaires.\n");
+			add_clients(&clients, N);
 			break;
 		}
 		case 5 :
 		{
-			printf("\t5-Affichage.\n");
+			print(clients, *N);
 			break;
 		}
 		case 6 :
@@ -95,19 +82,31 @@ void client_data(Client *client){
 	*(client + 2) = p3;
 	*(client + 3) = p4;
 }
-void add_client(Client *client){
-	printf("Nom : "); scanf("%s", client->nom);
-	printf("Prenom : "); scanf("%s", client->prenom);
-	printf("CIN : "); scanf("%s", client->CIN);
-	printf("Solde : "); scanf("%f", client->solde);
+void add_client(Client *client, int *N){
+	Client p1;
+	printf("Nom : "); scanf("%s", &p1.nom);
+	printf("Prenom : "); scanf("%s", &p1.prenom);
+	printf("CIN : "); scanf("%s",  &p1.CIN);
+	printf("Solde : "); scanf("%f", &p1.solde);
+	print_client(p1);
+	printf("\n");
+	strcpy( (*(client + (*N)).prenom, p1.prenom);
+	strcpy( client->nom, p1.nom);
+	strcpy( client->CIN, p1.CIN);
+	client->solde = p1.solde;
+	*(client + (*N)) = p1;
+	print_client(*(client + (*N)));
+	(*N)++;
 }
 void add_clients(Client *client,int *n){
-	int i;
-	printf("Introduire de %d client :\n", *n);
-	for (i=0; i<*n; i++)
+	int i,x;
+	printf("Combient de comptes vous voulez ajouter: ");
+	scanf("%d", &x);
+	printf("Introduire de %d client :\n", x);
+	for (i=0; i<x; i++)
 	{
 		printf("Client [%d]:\n", i+1);
-		add_client(client+i);
+		add_client(client+i, n);
 	}
 }
 int Menu_Principale(){
@@ -161,17 +160,43 @@ void depot(){
 void virement(){
 	printf("\nVirement");
 }
-void affiche_data(Client clients[],int n){
+void print(Client client[], int N){
+	int S = menu_print();
+	printf("\n\tError !!!%d\n",N);
+	switch(S){
+		case 1 :{
+			print_clients(client, N);
+			break;
+		}
+		default :{
+			printf("\n\tError !!!\n");
+			break;
+		}
+	}
+}
+int menu_print(){
+	int c;
+	printf("\n\t1-Affichage:");
+	printf("\n\t2-Trie:");
+	printf("\n\t  Votre choix: ");
+	scanf("%d",&c);
+	return c;
+}
+void print_clients(Client clients[],int n){
 	int i;
 	for(i=0;i<n;i++){
-		affiche_client(clients[i]);
+		print_client(clients[i]);
 		printf("\n");
 	}
 }
-void affiche_client(Client client){
-		printf("%s  || %s || %s || %d",client.nom,client.prenom,client.CIN,client.solde);
+void print_client(Client client){
+		printf("%s  || %s || %s || %.2f",client.nom,client.prenom,client.CIN,client.solde);
 }
 
+int main(){
+	startApplication();
+	return 0;
+}
 
 
 
