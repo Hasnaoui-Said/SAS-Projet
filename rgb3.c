@@ -22,6 +22,15 @@ int Menu_Principale(){
 	fflush(stdin);
 	return c;
 }
+Client *searsh(Client client[], int nb, char *nom){
+	int i;
+	for (i=0; i<nb; i++){
+		if (strcmp(nom, client[i].CIN) == 0){
+			return &client[i];
+		}
+	}
+	return NULL;
+}
 void print_infos(){
 	printf(
 	"\t\tCette application permet de gerer les comptes bancaires de plusieurs clients.\n"
@@ -36,6 +45,13 @@ void add_client(Client *nvClient, int *n){
 	printf("Prenom : "); scanf("%s", &clt.prenom);
 		printf("CIN : "); 
 		scanf("%s", &clt.CIN);
+		Client *s;
+		s = searsh(&nvClient, *n, &clt.CIN);
+		if(s == NULL){
+			print_client(s);
+			printf("CIN deja exist: \n");
+			return;
+		}
 		for (i=0; i<*n; i++)
 			if (strcmp(clt.CIN, nvClient[i].CIN) == 0){
 				printf("CIN deja exist: \n");
@@ -45,6 +61,7 @@ void add_client(Client *nvClient, int *n){
 	*(nvClient + (*n)) = clt;
 	(*n)++;
 }
+
 void print_clients(Client c[], int nb){
 	int i;
 	printf("Affichage du repertoire\n");
@@ -78,17 +95,19 @@ void data(Client *client){
 }
 int menuOperation(){
 	int c;
+	do{
 	printf("\n\n\tChoisir une operation:\n");
 	printf("\t1-Retrait.\n");
 	printf("\t2-Depot.\n");
 	printf("\t3-Virement.\n");
-	printf("\t-Menu principale tappez autre.\n");
+	printf("\t0-Menu principale.\n");
 	printf("\tVotre choix : ");
 	scanf("%d", &c);
-	fflush(stdin);
+	}while(c<=0 || c>4);
+	//fflush(stdin);
 	return c;
 }
-void retrait(){
+void retrait(Client client[], int *n_cpt){
 	printf("\nRetrait");
 }
 void depot(){
@@ -108,6 +127,7 @@ void searsh_client(Client client[], int nb, char *nom){
 	printf("\nN'existe pas !!\n");
 }
 
+
 int main(){
 	Client client[200];
 	int choix, n_cpt = 4;
@@ -124,10 +144,75 @@ int main(){
 			}
 			case 2 : {
 				int operation = menuOperation();
-				if(operation == 1) retrait();
-				else if(operation == 2) depot();
-				else if(operation == 3) virement();
-				break;
+				if(operation == 1){
+					char tape[50];
+					printf("\n\tTaper votre CIN: ");
+					scanf("%s", tape);
+					Client *r = searsh(client, n_cpt, tape);
+					if(r != NULL){
+						float mt;
+						do{
+							printf("\n\tEntrer le montant: ");
+							scanf("%f", &mt);
+						}while(mt<=0);
+						if(r->solde >= mt){
+							r->solde -= mt;
+							printf("\n\tMontant retrait: %.2f Dhs\n\tSolde: %.2f Dhs",mt, r->solde);
+							printf("\n\tOperation terminer avec seccees.");
+						}else 
+							printf("\n\tSolde insiffusant!!");
+					}else
+						printf("\n\tAucune compte avec cette CIN: %s",tape);
+				}
+				else if(operation == 2){
+					char tape[50];
+					printf("\n\tTaper votre CIN: ");
+					scanf("%s", tape);
+					Client *r = searsh(client, n_cpt, tape);
+					if(r != NULL){
+						float mt;
+						do{
+							printf("\n\tEntrer le montant: ");
+							scanf("%f", &mt);
+						}while(mt<=0);
+						r->solde += mt;
+						printf("\n\tOperation terminer avec seccees.");
+						printf("\n\tSolde: %.2f Dhs", r->solde - mt);
+						printf("\n\tNouveau solde: %.2f Dhs", r->solde);
+					}else
+						printf("\n\tAucune compte avec cette CIN: %s",tape);
+				}
+				else if(operation == 3){
+					char tape[50];
+					printf("\n\tTaper votre CIN: ");
+					scanf("%s", tape);
+					Client *r = searsh(client, n_cpt, tape);
+					char d[50];
+					if(r != NULL){
+						printf("\n\tEnter le CIN de destination: ");
+						scanf("%s", d);
+						Client *v = searsh(client, n_cpt, d);
+						if(v != NULL){
+							float mt;
+							do{
+								printf("\n\tEntrer le montant: ");
+								scanf("%f", &mt);
+							}while(mt<=0);
+							if(r->solde >= mt){
+								r->solde -= mt;
+								v->solde += mt;
+								printf("\n\tOperation terminer avec seccees.");
+								printf("\n\tMontant retrait: %.2f Dhs\n\tSolde actuelle: %.2f Dhs",mt, r->solde);
+							}
+							else
+								printf("\n\tMantant insuffisant\n",d);
+						}
+						else
+							printf("\n\tDestination non trouver, CIN: %s errors\n",d);
+					}else
+						printf("\n\tAucune compte avec cette CIN: %s\n",tape);
+				}
+				else break;
 			}
 			case 3 : {
 				add_client(client, &n_cpt);
@@ -151,7 +236,11 @@ int main(){
 					char nom[50];
 					printf("Nom a rechercher : ");
 			        scanf("%s", nom);
-					searsh_client(client, &n_cpt, nom);
+					Client *s = searsh(client,n_cpt,nom);
+					if( s != NULL){
+						print_client(*s);
+					}else 
+						printf("N'exist pas.\n");
 				}else{
 					printf("Hors services ......\n");
 				}
@@ -162,7 +251,14 @@ int main(){
 				break;
 			}
 			case 7 : {
-				print_infos();
+				    char nom[50];
+					printf("Nom a rechercher : ");
+			        scanf("%s", nom);
+					Client *s = searsh(client,n_cpt,nom);
+					if( s != NULL){
+						print_client(*s);
+					}else 
+						printf("N'exist pas.\n");
 				break;
 			}
 			case 8 : {
@@ -172,6 +268,18 @@ int main(){
 			default :{
 				break;
 			}
+		}
+		char isOk[5] = "no";
+		if(choix == 0){
+			printf("\n\tQuiter l'application (yes,no)......  ");
+			scanf("%s",isOk);
+			if(strcmp(isOk, "no") == 0) choix = 1;
+		}
+		else if(choix != 0){
+			printf("\n\tFaire autre Operation:(yes,no).....  ");
+			scanf("%s",isOk);
+			if(strcmp(isOk, "yes") == 0);
+			else choix = 0;
 		}
 	}while (choix != 0);
 	
