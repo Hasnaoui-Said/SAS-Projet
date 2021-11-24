@@ -27,7 +27,7 @@ int Menu_Principale(){
 Client *searsh(Client client[], int nb, char *nom){
 	int i;
 	for (i=0; i<nb; i++){
-		if (strcmp(nom, client[i].CIN) == 0){
+		if (strcmp(strupr(nom), strupr(client[i].CIN)) == 0){
 			return &client[i];
 		}
 	}
@@ -64,22 +64,54 @@ void add_client(Client *nvClient, int *n){
 }
 void print_clients(Client c[], int nb){
 	int i;
-	printf("Affichage du repertoire\n");
-	printf("%20s ...... Numero\n", "Nom");
+	printf("\n\tAffichage\n");
+	printf("%20s ........ %10s ........ %10s ........ %s\n\n", "Nom", "Prenom","CIN" ,"Solde");
 	for (i=0; i<nb; i++)
 	{
 		print_client(c[i]);
 	}
 }
 void print_client(Client c){
-	printf("%20s -------- %s------- %s ------ %.2f\n", c.nom, c.prenom,c.CIN ,c.solde);
+	printf("%20s -------- %10s -------- %10s -------- %.2f\n", c.nom, c.prenom,c.CIN ,c.solde);
+}
+void print_ascendants(Client client[], int nb){
+	int i;
+	for (i=0; i<nb-1; i++){
+		if(client[i].solde > client[i+1].solde){
+			Client cache = client[i];
+			client[i] = client[i+1];
+			client[i+1] = cache;
+			i = -1;
+		}
+	}
+	printf("Affichage par ordre ascendant:\n");
+	print_clients(client,nb);
+}
+void print_descendants(Client client[], int nb){
+	int i;
+	for (i=0; i<nb-1; i++){
+		if(client[i].solde < client[i+1].solde){
+			Client cache = client[i];
+			client[i] = client[i+1];
+			client[i+1] = cache;
+			i = -1;
+		}
+	}
+	printf("Affichage par ordre descendant:\n");
+	print_clients(client,nb);
 }
 int menu_print(){
 	int c;
-	printf("\n\t1-Affichage:");
-	printf("\n\t2-chercher un client:");
-	printf("\n\t3-Trie:");
-	printf("\n\t  Votre choix: ");
+	printf("\n\t\tAffichage:");
+	printf("\n\t1-Aleatoire:");
+	printf("\n\t2-Par Ordre Ascendant:");
+	printf("\n\t3-Par Ordre Descendant:");
+	printf("\n\t4-Par Ordre Ascendant:");
+	printf("\n\t\t-les comptes bancaires ayant un montant supérieur a un chiffre introduit:");
+	printf("\n\t5-Par Ordre Descendant:");
+	printf("\n\t\t-les comptes bancaires ayant un montant supérieur a un chiffre introduit:");
+	printf("\n\t6-Recherche par CIN:  ");
+	printf("\n\tVotre choix:  ");
 	scanf("%d",&c);
 	return c;
 }
@@ -103,8 +135,8 @@ int menuOperation(){
 	printf("\t0-Menu principale.\n");
 	printf("\tVotre choix : ");
 	scanf("%d", &c);
-	}while(c<=0 || c>4);
-	//fflush(stdin);
+	}while(c<0 || (int)c>3);
+//	fflush(stdin);
 	return c;
 }
 void retrait(Client client[], int *n_cpt){
@@ -131,23 +163,27 @@ void clear(){
         system("cls");
 		clear();
 }
+
 int main(){
 	Client client[200];
 	int choix, n_cpt = 4;
 	data(&client);
 	do{
+		system("cls");
 		do{
 			choix = Menu_Principale();
 			
 		}while (choix < 0 || choix > 9);
 		switch (choix){
 			case 1 : {
+				system("cls");
 				print_infos();
 				break;
 			}
 			case 2 : {
+				system("cls");
 				char add_c[50];
-//				do{
+				do{
 					add_c[50] = NULL;
 					int operation = menuOperation();
 					if(operation == 1){
@@ -220,16 +256,15 @@ int main(){
 						}else
 							printf("\n\tAucune compte avec cette CIN: %s\n",tape);
 					}
-					else if(operation == 0)
-						add_c[50] = "no";
 					else 
-						printf("\n\tAutre OperationSSSS (yes,no).... ");
-					printf("\n\tAutre Operation (yes,no).... ");
+						printf("\n\tAttention vous voulez quiter?!!.... ");
+					printf("\n\n\tAutre Operation (yes,no).... ");
 					scanf("%s",add_c);
-//				}while(strcmp(add_c, "yes") == 0 || strcmp(add_c, "YES") == 0);
+				}while(strcmp(add_c, "yes") == 0 || strcmp(add_c, "YES") == 0);
 				break;
 			}
 			case 3 : {
+				system("cls");
 				char add_c[50];
 				do{
 					add_client(client, &n_cpt);
@@ -239,6 +274,7 @@ int main(){
 				break;
 			}
 			case 4 : {
+				system("cls");
 				int x,i;
 				do{ 
 					printf("Combient de compte vous voulez cree: ");
@@ -249,42 +285,54 @@ int main(){
 				break;
 			}
 			case 5 : {
-				int KJ = menu_print();
-				if(KJ == 1){
-					print_clients(client,n_cpt);
-					char add_c[50];
-					do{
-						printf("\n\tChercher un client (yes,no).... ");
-						scanf("%s",add_c);
-						if(strcmp(add_c, "yes") == 0 || strcmp(add_c, "YES") == 0){	
+				system("cls");
+				char add_c[50];
+				do{
+					int KJ = menu_print();
+					if(KJ == 1){
+						print_clients(client,n_cpt);
+					}
+					else if(KJ == 2){
+						print_ascendants(client,n_cpt);
+					}
+					else if(KJ == 3){
+						print_descendants(client,n_cpt);
+					}
+					else if(KJ == 4){
+						
+					}
+					else if(KJ == 5){
+						
+					}
+					else if(KJ == 6){
+						char add_c[50] = "no";
+						do{
 							char add_v[50];
 							printf("\n\tNon a rechercher.... ");
 							scanf("%s",add_v);
 							Client *s = searsh(client,n_cpt,add_v);
 							if( s != NULL){
 								print_client(*s);
-							}else 
+							}
+							else 
 								printf("N'exist pas.\n");
-						}
-						
-					}while(strcmp(add_c, "yes") == 0 || strcmp(add_c, "YES") == 0);
+							printf("\n\tChercher un autre client (yes,no).... ");
+							scanf("%s",add_c);
+						}while(strcmp(add_c, "yes") == 0 || strcmp(add_c, "YES") == 0);
 				}
-				else if(KJ == 2){
-					char nom[50];
-					printf("Nom a rechercher : ");
-			        scanf("%s", nom);
-					Client *s = searsh(client,n_cpt,nom);
-					if( s != NULL){
-						print_client(*s);
-					}else 
-						printf("N'exist pas.\n");
-				}else{
+				else 
 					printf("Hors services ......\n");
-				}
+				printf("\n\n\tAutre Afficahe (yes,no).... ");
+				scanf("%s",add_c);
+				}while(strcmp(add_c, "yes") == 0 || strcmp(add_c, "YES") == 0);
 				break;
 			}
 			case 6 : {
-				
+				int i;
+				print_descendants(client,n_cpt);
+				for(i=0;i<3;i++)
+		        	client[i].solde *= 1.013;
+				print_descendants(client,n_cpt);
 				break;
 			}
 			case 7 : {
@@ -313,15 +361,12 @@ int main(){
 			if(strcmp(isOk, "no") == 0||strcmp(isOk, "NO") == 0) choix = 1;
 		}
 		else if(choix != 0){
-			printf("\n\tFaire autre Operation:(yes,no).....  ");
+			printf("\n\tMenu principale:(yes,no).....  ");
 			scanf("%s",isOk);
 			if(strcmp(isOk, "yes") == 0 || strcmp(isOk, "YES") == 0);
 			else choix = 0;
 		}
-	
 	}while (choix != 0);
-	
-	
 	return 0;
 }
 
