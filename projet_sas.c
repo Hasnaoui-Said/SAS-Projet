@@ -26,8 +26,11 @@ void clear();
 
 int main(){
 	Client client[200];
-	int choix, n_cpt = 4;
-	data(&client);
+	int choix, n_cpt = 0;
+    FILE *fec = fopen("data.txt","r");
+	while((fscanf(fec, "%s %s %s %f", &client[n_cpt].CIN,&client[n_cpt].nom,&client[n_cpt].prenom,&client[n_cpt].solde)) != -1)
+		n_cpt++;
+	fclose(fec);
 	do{
 		system("cls");
 		do{
@@ -283,6 +286,11 @@ int main(){
 			else choix = 0;
 		}
 	}while (choix != 0);
+	FILE *q = fopen("data.txt","w");
+	int i;
+    for(i=0;i<n_cpt;i++)
+        fprintf(q,"%s %s %s %f\n",client[i].CIN,client[i].nom,client[i].prenom,client[i].solde);
+    fclose(q);
 	return 0;
 }
 int Menu_Principale(){
