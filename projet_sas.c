@@ -31,6 +31,15 @@ int main(){
 	while((fscanf(fec, "%s %s %s %f", &client[n_cpt].CIN,&client[n_cpt].nom,&client[n_cpt].prenom,&client[n_cpt].solde)) != -1)
 		n_cpt++;
 	fclose(fec);
+	printf("\n\n\t\t***************************************************\n");
+	printf("\n\t\t\t\tApplication bancaire\n\n\n\t\t\tBrief Projet SAS : Gestion Bancaire\n");
+	printf("\n\n\t\t***************************************************\n");
+	printf("\n\n\n\t\t\t\tSalle 2\n\n\t\t\t\tSaid HASNAOUI\n\n");
+	printf("\n\n\t\t***************************************************\n");
+	char start[50];
+	printf("\n\n\t\t........   ");
+	scanf("%s",start);
+	
 	do{
 		system("cls");
 		do{
@@ -114,7 +123,7 @@ int main(){
 									r->solde -= mt;
 									v->solde += mt;
 									printf("\n\tOperation terminer avec seccees.");
-									printf("\n\tMontant retrait: %.2f Dhs\n\tSolde actuelle: %.2f Dhs",mt, r->solde);
+									printf("\n\tMontant vermer: %.2f Dhs\n\tSolde actuelle: %.2f Dhs",mt, r->solde);
 								}
 								else
 									printf("\n\tMantant insuffisant\n",d);
@@ -291,6 +300,13 @@ int main(){
     for(i=0;i<n_cpt;i++)
         fprintf(q,"%s %s %s %f\n",client[i].CIN,client[i].nom,client[i].prenom,client[i].solde);
     fclose(q);
+    system("cls");
+	printf("\n\n\t\t***************************************************\n");
+	printf("\n\n\n\t\tSalle 2\n\n\t\tSaid HASNAOUI\n\n");
+	printf("\n\n\t\t***********************Fin****************************\n");
+	char fin[50];
+	printf("\n\n\t\t.........   ");
+	scanf("%s",fin);
 	return 0;
 }
 int Menu_Principale(){
@@ -329,14 +345,15 @@ void print_infos(){
 void add_client(Client *nvClient, int *n){
 	Client clt;
 	int i;
-	printf("Nom : "); scanf("%s", &clt.nom);
-	printf("Prenom : "); scanf("%s", &clt.prenom);
-	printf("CIN : "); 
+	printf("\n\n\t\tAjouter clinet: ");
+	printf("\n\n\t\tNom : "); scanf("%s", &clt.nom);
+	printf("\n\n\t\tPrenom : "); scanf("%s", &clt.prenom);
+	printf("\n\n\t\tCIN : "); 
 	scanf("%s", &clt.CIN);
 	Client *s;
 	s = searsh(nvClient, *n, &clt.CIN);
 	if(s != NULL){
-		printf("CIN deja exist: \n");
+		printf("\n\n\t\tCIN deja exist: \n");
 		return;
 	}
 //		for (i=0; i<*n; i++)
@@ -344,14 +361,14 @@ void add_client(Client *nvClient, int *n){
 //				printf("CIN deja exist: \n");
 //				return;
 //			}
-	printf("Solde : "); scanf("%f", &clt.solde);
+	printf("\n\n\t\tSolde : "); scanf("%f", &clt.solde);
 	*(nvClient + (*n)) = clt;
 	(*n)++;
 }
 void print_clients(Client c[], int nb){
 	int i;
 	printf("\n\n\tAffichage\n");
-	printf("%20s ........ %10s ........ %10s ........ %s\n", "Nom", "Prenom","CIN" ,"Solde");
+	printf("%20s _________ %10s _________ %10s _________ %s\n", "Nom", "Prenom","CIN" ,"Solde");
 	printf("%20s_________%10s_________%10s_________%s\n\n", "_____", "_______","______" ,"_______");
 	for (i=0; i<nb; i++){
 		print_client(c[i]);
